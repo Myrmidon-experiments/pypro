@@ -1,0 +1,16 @@
+[General]
+project_structure:
+ +/docs/
+ +/tests/
+ +/tests/test_main.py
+ +/project_name/
+ +/project_name/main.py
+ +/setup.py
+ +/MANIFEST.in
+ +/README.md
+ +/requirements.txt
+root_projects_dir: string
+init_under_root_projects_dir=Bool
+
+[Analize Settings]
+custom_prexifes: string (separado por comas)
