@@ -1,5 +1,4 @@
 import os
-import configparser
 
 
 class StructureAnalizer:
@@ -10,8 +9,7 @@ class StructureAnalizer:
         self.exclude_prefixes = ['__', '.']
         self.structure = ""
 
-    # Not finish yet
-    def analize(self, path=os.getcwd()):
+    def analize_dir_structure(self, path=os.getcwd()):
         if path.endswith('/'):
             path = path[:-1]
         basename_index = path.find(os.path.basename(path))
@@ -33,35 +31,12 @@ class StructureAnalizer:
 
     def restructure(self, replace=False, replace_with='+'):
         basename = self.structure.split('\n')[0][:-1]
+        if replace:
+            self.structure = self.structure.replace(basename, replace_with)
+            return basename + self.structure[1:]
         return self.structure.replace(basename, 'new_project')
 
 
-class ConfigFile:
-
-    def __init__(self, reader_writer):
-        self.methods = ('read', 'write')
-        self.reader_writer = reader_writer
-
-    @property
-    def reader_writer(self):
-        return self._reader_writer
-
-    @reader_writer.setter
-    def reader_writer(self, real_reader_writer):
-        for method in self.methods:
-            if not hasattr(real_reader_writer, method):
-                raise Exception("Make my own exception for this")
-        self._reader_writer = real_reader_writer
-
-    def read_config_item(self, section, item_name):
-        return self.reader_writer.read(section, item_name)
-
-    def write_config_item(self, section, item_name, input_):
-        self.reader_writer.write(input_)
-
-
-obj2 = StructureAnalizer()
-obj2.analize('/home/cactus/Devel/pypro')
-
-
-print(obj2.restructure())
+a = StructureAnalizer()
+a.analize_dir_structure()
+print(a.restructure(replace=True))
