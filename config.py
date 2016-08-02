@@ -3,31 +3,44 @@ import configparser
 
 class ConfigFile:
 
-    def __init__(self, reader_writer):
+    def __init__(self, file_handler):
         self.methods = ('read', 'write')
-        self.reader_writer = reader_writer
+        self.file_handler = file_handler
 
     @property
-    def reader_writer(self):
-        return self._reader_writer
+    def file_handler(self):
+        return self._file_handler
 
-    @reader_writer.setter
-    def reader_writer(self, real_reader_writer):
+    @file_handler.setter
+    def file_handler(self, real_file_handler):
         for method in self.methods:
-            if not hasattr(real_reader_writer, method):
+            if not hasattr(real_file_handler, method):
                 raise Exception("Make my own exception for this")
-        self._reader_writer = real_reader_writer
+        self._file_handler = real_file_handler
 
     def read_config_item(self, section, item_name):
-        return self.reader_writer.read(section, item_name)
+        return self.file_handler.read(section, item_name)
 
     def write_config_item(self, section, item_name, input_):
-        self.reader_writer.write(input_)
+        self.file_handler.write(input_)
 
 
-a = configparser.ConfigParser()
-a.read('example_config_file')
-print(a.sections())
-for a in a['General']['project_structure'].split('\n'):
-    if a == '':
-        print('Fine')
+class ConfigParserHandler:
+
+    def __init__(self, file_):
+        self.parser = configparser.ConfigParser()
+        self.parser.read(file_)
+
+    def read(self, section, item_name):
+        return self.parser[section][item_name]
+
+    def write(self, section, item_name, input_):
+        self.parser[section][item_name] = input_
+
+
+class JsonHandler:
+    pass
+
+
+a = ConfigParserHandler('example_config_file')
+print(a.read('General', 'root_projects_dir'))

@@ -29,12 +29,12 @@ class StructureAnalizer:
     def _check_prefixes(self, to_check):
         return to_check.startswith(tuple(self.exclude_prefixes))
 
-    def restructure(self, replace=False, replace_with='+'):
+    def restructure(self, replace=False, repl_with='+'):
         basename = self.structure.split('\n')[0][:-1]
+        dirname = 'project_name'
         if replace:
-            self.structure = self.structure.replace(basename, replace_with)
-            return basename + self.structure[1:]
-        return self.structure.replace(basename, 'new_project')
+            return dirname + self.structure.replace(basename, repl_with)[1:]
+        return self.structure.replace(basename, dirname)
 
 
 a = StructureAnalizer()
