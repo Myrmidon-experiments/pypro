@@ -1,4 +1,5 @@
-import configparser
+import json
+from configparser import ConfigParser
 
 
 class ConfigFile:
@@ -28,7 +29,7 @@ class ConfigFile:
 class ConfigParserHandler:
 
     def __init__(self, file_):
-        self.parser = configparser.ConfigParser()
+        self.parser = ConfigParser()
         self.parser.read(file_)
 
     def read(self, section, item_name):
@@ -42,5 +43,13 @@ class JsonHandler:
     pass
 
 
-a = ConfigParserHandler('example_config_file')
-print(a.read('General', 'root_projects_dir'))
+with open('pypro_config_example.json', 'r') as f:
+    config = json.load(f)
+
+a = ""
+for i in config['General']['project_structure']:
+    print(i)
+    a += i + '\n'
+
+print("###")
+print(a)

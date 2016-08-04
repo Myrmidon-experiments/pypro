@@ -21,7 +21,7 @@ project_structure:
  project_name/README.md
  project_name/requirements.txt 
 root_projects_dir: string
-init_under_root_projects_dir=Bool
+init_under_root_projects_dir=1
 
 [Analize Settings]
 custom_prexifes: string (separado por comas)
