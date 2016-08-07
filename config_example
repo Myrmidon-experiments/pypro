@@ -20,8 +20,14 @@ project_structure:
  project_name/MANIFEST.in
  project_name/README.md
  project_name/requirements.txt 
-root_projects_dir: string
+root_projects_dir: path/to/projects/dir
 init_under_root_projects_dir=1
 
 [Analize Settings]
 custom_prexifes: string (separado por comas)
+
+[Virtualenv Settings]
+virtual_envs_location: path/to/virtualenvs
+
+[VCS Settings]
+ignore_file_path: path/to/base_ignore_file

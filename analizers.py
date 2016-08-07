@@ -35,8 +35,3 @@ class StructureAnalizer:
         if replace:
             return dirname + self.structure.replace(basename, repl_with)[1:]
         return self.structure.replace(basename, dirname)
-
-
-a = StructureAnalizer()
-a.analize_dir_structure()
-print(a.restructure(replace=True))
