@@ -1,6 +1,5 @@
 import os
-import inspect
-from subprocess import call, Popen
+from subprocess import call
 from analizers import StructureAnalizer
 
 
@@ -26,29 +25,30 @@ def init_vcs(vcs, ignore_file=None):
     print('pass')
 
 
-def init_venv(name, py_3=True, location=None,
-              **options):
+def init_venv(name, py_3=True, location=None, **options):
     command_line = 'virtualenv --python=/usr/bin/python3'
     if not py_3:
         command_line = 'virtualenv --python=/usr/bin/python2.7'
-    # TODO: Other options here with **options
     if location:
         command_line += ' ' + os.path.join(location, name)
     else:
         command_line += ' ' + os.path.join(os.getenv('WORKON_HOME'), name)
 
+    # Almost finished. Lack PROMPT and EXTRA-SEARCH-DIR
+    for option in options.keys():
+        command_line += ' --' + option
+
     print(command_line)
-    call(command_line, shell=True)
+    # call(command_line, shell=True)
 
-"""
-a = StructureAnalizer()
-a.analize_dir_structure()
-create_structure('some', structure=a.restructure())
 
-a = inspect.signature(init_venv)
-print(type(a))
+def handle_options_venv():
+    pass
 
-a.parameters
-"""
 
-init_venv('pepe')
+d = dict()
+b = 'no-download,no-pip,no-wheel'
+for opt in b.split(','):
+    d[opt] = 1
+
+init_venv('pepe', **d)

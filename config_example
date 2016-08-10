@@ -28,6 +28,7 @@ custom_prexifes: string (separado por comas)
 
 [Virtualenv Settings]
 virtual_envs_location: path/to/virtualenvs
+virtualenv_options: string (separado por comas)
 
 [VCS Settings]
 ignore_file_path: path/to/base_ignore_file

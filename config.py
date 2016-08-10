@@ -43,7 +43,7 @@ class JsonHandler:
     pass
 
 
-with open('pypro_config_example.json', 'r') as f:
+with open('config_example.json', 'r') as f:
     config = json.load(f)
 
 a = ""
