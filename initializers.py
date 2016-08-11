@@ -42,13 +42,16 @@ def init_venv(name, py_3=True, location=None, **options):
     # call(command_line, shell=True)
 
 
-def handle_options_venv():
-    pass
+# Define a right way to handle options with parameters
+def handle_options_venv(options, options_with_param=None):
+    options_as_dict = dict()
+    for option in options.split(','):
+        options_as_dict[option] = 1
+    return options_as_dict
 
 
-d = dict()
 b = 'no-download,no-pip,no-wheel'
-for opt in b.split(','):
-    d[opt] = 1
+d = handle_options_venv(b)
+print(d)
 
 init_venv('pepe', **d)
