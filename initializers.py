@@ -1,6 +1,8 @@
 import os
 from subprocess import call
-from analizers import StructureAnalizer
+
+
+possibles_vcs = ('git', 'svn', 'subversion', 'bzr', 'bazaar', 'mercurial')
 
 
 def create_structure(name, structure=None,
@@ -22,10 +24,13 @@ def create_structure(name, structure=None,
 
 
 def init_vcs(vcs, ignore_file=None):
-    print('pass')
+    if vcs in possibles_vcs:
+        pass
+    else:
+        print("Vcs not supported")
 
 
-def init_venv(name, py_3=True, location=None, **options):
+def init_venv(name, py_3=True, location=None, path_to_rqes=None, **options):
     command_line = 'virtualenv --python=/usr/bin/python3'
     if not py_3:
         command_line = 'virtualenv --python=/usr/bin/python2.7'
@@ -50,8 +55,9 @@ def handle_options_venv(options, options_with_param=None):
     return options_as_dict
 
 
+# Pruebas
 b = 'no-download,no-pip,no-wheel'
 d = handle_options_venv(b)
 print(d)
 
-init_venv('pepe', **d)
+init_venv('pepe', path_to_rqes="Falla", **d)

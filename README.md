@@ -15,7 +15,7 @@ configure stuff and usage here
 Usage
 -----
 
-Usage here
+Post here the pypro -h | --help output
 
 License
 -------
