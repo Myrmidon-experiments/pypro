@@ -2,6 +2,14 @@ import json
 from configparser import ConfigParser
 
 
+def locate_config_file(location, scheme=1):
+    pass
+
+
+def locate_necessary_files():
+    pass
+
+
 class ConfigFile:
 
     def __init__(self, file_handler):
@@ -23,7 +31,7 @@ class ConfigFile:
         return self.file_handler.read(section, item_name)
 
     def write_config_item(self, section, item_name, input_):
-        self.file_handler.write(input_)
+        self.file_handler.write(section, item_name, input_)
 
 
 class ConfigParserHandler:
@@ -40,9 +48,17 @@ class ConfigParserHandler:
 
 
 class JsonHandler:
-    pass
 
+    def __init__(self, file_):
+        pass
 
+    def read(self, section, item_name):
+        pass
+
+    def write(self, section, item_name, input_):
+        pass
+
+"""
 with open('config_example.json', 'r') as f:
     config = json.load(f)
 
@@ -53,3 +69,4 @@ for i in config['General']['project_structure']:
 
 print("###")
 print(a)
+"""

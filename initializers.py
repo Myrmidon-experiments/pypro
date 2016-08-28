@@ -2,11 +2,12 @@ import os
 from subprocess import call
 
 
-possibles_vcs = ('git', 'svn', 'subversion', 'bzr', 'bazaar', 'mercurial')
+possibles_vcs = ('git', 'bzr', 'bazaar', 'hg',
+                 'mercurial', 'svn', 'subversion')
 
 
-def create_structure(name, structure=None,
-                     location='/home/cactus/Escritorio/test_pypro'):
+def init_structure(name, structure=None,
+                   location='/home/cactus/Escritorio/test_pypro'):
     real_structure = structure.replace('project_name', name)
     dirs = (d for d in real_structure.split('\n') if d.endswith('/'))
     files = (f for f in real_structure.split('\n')
@@ -43,8 +44,8 @@ def init_venv(name, py_3=True, location=None, path_to_rqes=None, **options):
     for option in options.keys():
         command_line += ' --' + option
 
-    print(command_line)
-    # call(command_line, shell=True)
+    # print(command_line)
+    call(command_line, shell=True)
 
 
 # Define a right way to handle options with parameters
@@ -53,11 +54,3 @@ def handle_options_venv(options, options_with_param=None):
     for option in options.split(','):
         options_as_dict[option] = 1
     return options_as_dict
-
-
-# Pruebas
-b = 'no-download,no-pip,no-wheel'
-d = handle_options_venv(b)
-print(d)
-
-init_venv('pepe', path_to_rqes="Falla", **d)

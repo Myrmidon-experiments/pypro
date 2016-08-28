@@ -23,7 +23,7 @@ project_structure:
 root_projects_dir: path/to/projects/dir
 
 [Analize Settings]
-custom_prexifes: string (separado por comas)
+custom_prexifes: separado por comas
 
 [Virtualenv Settings]
 virtualenv_location: path/to/virtualenvs

@@ -1,5 +1,17 @@
 #PYPRO -*- mode: org -*-
 
-* IN-PROGRESS [#A] Finish parser
+* DONE [#A] Finish parser
 * TODO [#C] Make setup.py and MANIFEST if is necessary
+* TODO [#C] Finish README 
+* TODO [#C] Add class and function docstrings
 * TODO [#A] Make Tests   
+
+Possible new features
+** Analizers
+   - .editorconfig
+   - license
+** Config
+   - YAML
+** Initializers
+   - Dockerfile
+   - Vagrant
