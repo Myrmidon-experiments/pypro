@@ -10,16 +10,6 @@ project_structure:
  +/MANIFEST.in
  +/README.md
  +/requirements.txt
- project_name/
- project_name/docs/
- project_name/tests/
- project_name/tests/test_main.py
- project_name/project_name/
- project_name/project_name/main.py
- project_name/setup.py
- project_name/MANIFEST.in
- project_name/README.md
- project_name/requirements.txt 
 root_projects_dir: path/to/projects/dir
 
 [Analize Settings]

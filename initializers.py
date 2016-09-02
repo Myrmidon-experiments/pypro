@@ -44,7 +44,6 @@ def init_venv(name, py_3=True, location=None, path_to_rqes=None, **options):
     for option in options.keys():
         command_line += ' --' + option
 
-    # print(command_line)
     call(command_line, shell=True)
 
 

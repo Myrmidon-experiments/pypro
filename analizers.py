@@ -3,6 +3,7 @@ from exceptions import PathNotExists
 from subprocess import call, STDOUT
 from contextlib import contextmanager
 from shutil import copy, which
+from initializers import possibles_vcs
 
 
 class StructureAnalizer:
@@ -52,16 +53,26 @@ def my_cd(path):
     finally:
         os.chdir(prev_dir)
 
+vcs = tuple(filter(lambda x: len(x) < 4, possibles_vcs))
+command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
+
 
 def analize_vcs(path):
-    """Similar to analize_vcs2 but more concise
-    May be, a dict {'git': (command, function_to_ignore_files)}
-    for vcs in command_vcs:
-        if which vcs and call
-            call function_ignore_files
-            return vcs.keys
-    """
-    pass  # Make a dict with vcs: command; example {'git': 'status'}
+    def handle_ignore_file(vcs, dest, svn_flag=False):
+        ignore_file = '.' + vcs + 'ignore'
+        if svn_flag:
+            pass  # svn ignore files stuff here
+        elif os.path.isfile(ignore_file):
+            copy(ignore_file, dest)
+
+    dest = "/home/cactus/Escritorio/test_pypro"  # Temporal
+    with my_cd(path):
+        for k, v in command_vcs.items():
+            svn_flag = True if k == 'svn' else False
+            if which(k) and call([k, v], stderr=STDOUT,
+                                 stdout=open(os.devnull, 'w')) == 0:
+                handle_ignore_file(k, dest, svn_flag)
+                return k
 
 
 def analize_vcs2(path):
@@ -88,7 +99,3 @@ def analize_vcs2(path):
                                  stdout=open(os.devnull, 'w')) == 0:
             # Do svn ignore files stuff
             return 'svn'
-
-
-a = analize_vcs2(os.getcwd())
-print(a)

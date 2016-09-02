@@ -1,13 +1,6 @@
 import json
 from configparser import ConfigParser
-
-
-def locate_config_file(location, scheme=1):
-    pass
-
-
-def locate_necessary_files():
-    pass
+from exceptions import HandlerNotImplement
 
 
 class ConfigFile:
@@ -24,7 +17,7 @@ class ConfigFile:
     def file_handler(self, real_file_handler):
         for method in self.methods:
             if not hasattr(real_file_handler, method):
-                raise Exception("Make my own exception for this")
+                raise HandlerNotImplement
         self._file_handler = real_file_handler
 
     def read_config_item(self, section, item_name):
