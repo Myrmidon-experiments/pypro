@@ -1,9 +1,9 @@
 import os
-from exceptions import PathNotExists
+from pypro.exceptions import PathNotExists
+from pypro.initializers import possibles_vcs
 from subprocess import call, STDOUT
 from contextlib import contextmanager
 from shutil import copy, which
-from initializers import possibles_vcs
 
 
 class StructureAnalizer:

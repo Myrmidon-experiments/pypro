@@ -1,6 +1,6 @@
 import json
 from configparser import ConfigParser
-from exceptions import HandlerNotImplement
+from pypro.exceptions import HandlerNotImplement
 
 
 class ConfigFile:

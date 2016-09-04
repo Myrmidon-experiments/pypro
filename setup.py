@@ -9,6 +9,7 @@ class CustomDevelop(develop):
         location = os.path.join(os.getenv("HOME"), '.pypro')
         if not (os.path.isdir(location)):
             os.makedirs(location)
+        develop.run(self)
 
 description = "Description here... "
 

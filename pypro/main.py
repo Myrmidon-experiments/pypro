@@ -1,7 +1,7 @@
 import os
-from cli import get_args
-from analizers import StructureAnalizer
-from initializers import init_structure
+from pypro.cli import get_args
+from pypro.analizers import StructureAnalizer
+from pypro.initializers import init_structure
 # from config import ConfigFile, ConfigParserHandler
 
 
@@ -25,6 +25,3 @@ def main():
         init(args.name, args.scheme, args.venv, args.vcs)
     else:
         analize(args.path, args.save, args.novcs)
-
-if __name__ == '__main__':
-    main()
