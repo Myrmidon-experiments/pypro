@@ -63,3 +63,7 @@ for i in config['General']['project_structure']:
 print("###")
 print(a)
 """
+import sys
+
+for i in sys.path:
+    print(i)

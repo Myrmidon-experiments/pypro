@@ -1,8 +1,7 @@
-import pytest
-from unittest import mock
-from config import ConfigParserHandler
+
+# import pytest
+# from unittest import mock
 # from config import ConfigParserHandler
-# from exceptions import PathNotExists
 
 
 class TestConfigParserHandler:
