@@ -1,23 +1,24 @@
 [General]
-project_structure:
- project_name/
- +/docs/
- +/tests/
- +/tests/test_main.py
- +/project_name/
- +/project_name/main.py
- +/setup.py
- +/MANIFEST.in
- +/README.md
- +/requirements.txt
-root_projects_dir: path/to/projects/dir
+project_structure = 
+	project_name/
+	+/docs/
+	+/tests/
+	+/tests/test_main.py
+	+/project_name/
+	+/project_name/main.py
+	+/setup.py
+	+/MANIFEST.in
+	+/README.md
+	+/requirements.txt
+root_projects_dir = pepe/mujica
 
 [Analize]
-custom_prefixes: separado por comas
+custom_prefixes = separado por comas
 
 [Virtualenv]
-virtualenv_location: path/to/virtualenvs
-virtualenv_options: string (separado por comas)
+virtualenv_location = path/to/virtualenvs
+virtualenv_options = string (separado por comas)
 
 [VCS]
-vcs: git
+vcs = git
+

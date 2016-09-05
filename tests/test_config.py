@@ -1,32 +1,35 @@
 from unittest.mock import patch, mock_open
 from pypro.config import ConfigParserHandler
-from io import StringIO
 
 
 str_file = """
 [General]
-project_structure:
- project_name/
- +/docs/
- +/main.py
 root_projects_dir: path/to/projects/dir
 
 [Analize]
-custom_prexifes: separado por comas
+custom_prefixes: __,.,#
 """
 
 
 class TestConfigParserHandler:
 
-    handler = ConfigParserHandler('../resources/config_example')
-
     def test_when_read_a_value(self):
-        value_readed = self.handler.read('General', 'root_projects_dir')
-        assert value_readed == 'path/to/projects/dir'
-
-    def test_2(self):
-        with patch('pypro.config.ConfigParserHandler.read'):
-            pass
+        handler = ConfigParserHandler(str_file)
+        assert handler.read('Analize', 'custom_prefixes') == '__,.,#'
 
     def test_when_write_a_value(self):
-        pass
+        handler = ConfigParserHandler(str_file)
+        handler.write('General', 'root_projects_dir', 'Pepe')
+        assert handler.read('General', 'root_projects_dir') == 'Pepe'
+
+    def test_when_save_changes(self):
+        handler = ConfigParserHandler(str_file)
+        mocked_open = mock_open()
+        with patch('builtins.open', mocked_open, create=True):
+            with open('fake_file', 'w') as ff:
+                handler.save(ff)
+        assert mocked_open.called
+
+
+class TestJsonHandler:
+    pass
