@@ -12,12 +12,12 @@ project_structure:
  +/requirements.txt
 root_projects_dir: path/to/projects/dir
 
-[Analize Settings]
-custom_prexifes: separado por comas
+[Analize]
+custom_prefixes: separado por comas
 
-[Virtualenv Settings]
+[Virtualenv]
 virtualenv_location: path/to/virtualenvs
 virtualenv_options: string (separado por comas)
 
-[VCS Settings]
+[VCS]
 vcs: git

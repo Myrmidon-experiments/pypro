@@ -31,7 +31,7 @@ class ConfigParserHandler:
 
     def __init__(self, file_):
         self.parser = ConfigParser()
-        self.parser.read(file_)
+        self.parser.read_file(file_)
 
     def read(self, section, item_name):
         return self.parser[section][item_name]
@@ -50,20 +50,3 @@ class JsonHandler:
 
     def write(self, section, item_name, input_):
         pass
-
-"""
-with open('config_example.json', 'r') as f:
-    config = json.load(f)
-
-a = ""
-for i in config['General']['project_structure']:
-    print(i)
-    a += i + '\n'
-
-print("###")
-print(a)
-"""
-import sys
-
-for i in sys.path:
-    print(i)
