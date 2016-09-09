@@ -11,11 +11,14 @@ class StructureAnalizer:
     """
 
     def __init__(self, custom_prefixes=None):
-        self.exclude_prefixes = ['__', '.']
+        if custom_prefixes:
+            self.exclude_prefixes = custom_prefixes.split(',')
+        else:
+            self.exclude_prefixes = []
         self.structure = ""
 
     def analize_dir_structure(self, path):
-        if path is None or not os.path.isdir(path):
+        if not os.path.isdir(path):
             raise PathNotExists("Dir does not exists")
         if path.endswith('/'):
             path = path[:-1]
@@ -30,10 +33,13 @@ class StructureAnalizer:
 
             self.structure += dirpath[basename_index:] + '/\n'
             for filename in filenames:
-                self.structure += os.path.join(dirpath[basename_index:],
-                                               filename) + '\n'
+                if filename != '':
+                    self.structure += os.path.join(dirpath[basename_index:],
+                                                   filename) + '\n'
 
     def _check_prefixes(self, to_check):
+        if to_check == '__init__.py':
+            return False
         return to_check.startswith(tuple(self.exclude_prefixes))
 
     def restructure(self, replace=False):
@@ -41,7 +47,7 @@ class StructureAnalizer:
         dirname = 'project_name'
         if replace:
             return dirname + self.structure.replace(basename, '+')[1:]
-        return self.structure.replace(basename, dirname)
+        return self.structure.replace(basename, dirname).rstrip()
 
 
 @contextmanager
@@ -58,6 +64,8 @@ command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
 
 
 def analize_vcs(path):
+    """Docstring for analize_vcs.
+    """
     def handle_ignore_file(vcs, dest, svn_flag=False):
         ignore_file = '.' + vcs + 'ignore'
         if svn_flag:
@@ -73,29 +81,4 @@ def analize_vcs(path):
                                  stdout=open(os.devnull, 'w')) == 0:
                 handle_ignore_file(k, dest, svn_flag)
                 return k
-
-
-def analize_vcs2(path):
-    dest = "/home/cactus/Escritorio/test_pypro"  # Temporal
-    if not os.path.isdir(path):
-        raise PathNotExists("Dir does not exists")
-    with my_cd(path):
-        if which('git') and call(['git', 'status'], stderr=STDOUT,
-                                 stdout=open(os.devnull, 'w')) == 0:
-            if os.path.isfile('.gitignore'):
-                copy('.gitignore', dest)
-            return 'git'
-        if which('bzr') and call(['bzr', 'status'], stderr=STDOUT,
-                                 stdout=open(os.devnull, 'w')) == 0:
-            if os.path.isfile('.bzrignore'):
-                copy('.bzrignore', dest)
-            return 'bzr'
-        if which('hg') and call(['hg', 'root'], stderr=STDOUT,
-                                stdout=open(os.devnull, 'w')) == 0:
-            if os.path.isfile('.hgignore'):
-                copy('.hgignore', dest)
-            return 'hg'
-        if which('svn') and call(['svn', 'info'], stderr=STDOUT,
-                                 stdout=open(os.devnull, 'w')) == 0:
-            # Do svn ignore files stuff
-            return 'svn'
+        return
