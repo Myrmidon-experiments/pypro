@@ -34,8 +34,17 @@ class TestStructureAnalizer:
             assert mock_walk.called
         assert fake_structure == my_instance.structure
 
-    def test_when_restructure(self, my_instance):
-        pass
+    def test_when_restructure(self, my_instance, fake_structure):
+        expected = fake_structure.replace('one', 'project_name').rstrip()
+        my_instance.structure = fake_structure.rstrip()
+        assert my_instance.restructure() == expected
 
-    def test_when_restructure_with_replace(self, my_instance):
-        pass
+    def test_when_restructure_with_replace(self, my_instance, fake_structure):
+        expected = 'project_name' + \
+            fake_structure.replace('one', '+')[1:].rstrip()
+        my_instance.structure = fake_structure
+        assert my_instance.restructure(replace=True) == expected
+
+
+class TestAnalizeVCS:
+    pass

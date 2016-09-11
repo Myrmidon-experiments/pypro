@@ -46,7 +46,7 @@ class StructureAnalizer:
         basename = self.structure.split('\n')[0][:-1]
         dirname = 'project_name'
         if replace:
-            return dirname + self.structure.replace(basename, '+')[1:]
+            return dirname + self.structure.replace(basename, '+')[1:].rstrip()
         return self.structure.replace(basename, dirname).rstrip()
 
 

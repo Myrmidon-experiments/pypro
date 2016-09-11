@@ -23,6 +23,9 @@ class TestConfigParserHandler:
         assert handler.read('General', 'root_projects_dir') == 'Pepe'
 
     def test_when_save_changes(self):
+        """When mock open, mock the open functionality inside
+        the function that I testing. This test is not finish.
+        """
         handler = ConfigParserHandler(str_file)
         mocked_open = mock_open()
         with patch('builtins.open', mocked_open, create=True):
