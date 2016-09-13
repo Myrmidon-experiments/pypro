@@ -46,5 +46,5 @@ class TestStructureAnalizer:
         assert my_instance.restructure(replace=True) == expected
 
 
-class TestAnalizeVCS:
+def test_when_analize_vcs():
     pass

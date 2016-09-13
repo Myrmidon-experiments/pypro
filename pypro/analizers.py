@@ -63,7 +63,7 @@ vcs = tuple(filter(lambda x: len(x) < 4, possibles_vcs))
 command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
 
 
-def analize_vcs(path):
+def analize_vcs(path, path_for_copy_files):
     """Docstring for analize_vcs.
     """
     def handle_ignore_file(vcs, dest, svn_flag=False):
@@ -73,12 +73,11 @@ def analize_vcs(path):
         elif os.path.isfile(ignore_file):
             copy(ignore_file, dest)
 
-    dest = "/home/cactus/Escritorio/test_pypro"  # Temporal
     with my_cd(path):
         for k, v in command_vcs.items():
             svn_flag = True if k == 'svn' else False
             if which(k) and call([k, v], stderr=STDOUT,
                                  stdout=open(os.devnull, 'w')) == 0:
-                handle_ignore_file(k, dest, svn_flag)
+                handle_ignore_file(k, path_for_copy_files, svn_flag)
                 return k
         return
