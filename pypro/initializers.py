@@ -32,7 +32,7 @@ def init_vcs(vcs, ignore_file=None):
         print("Vcs not supported")
 
 
-def init_venv(name, location=None, py_3=True, path_to_rqes=None, options=None):
+def init_venv(name, location=None, py_3=True, path_to_rqes='', options=None):
     """Docstring for init_venv here...
     """
     command_line = 'virtualenv --python={pyversion}'
@@ -44,7 +44,8 @@ def init_venv(name, location=None, py_3=True, path_to_rqes=None, options=None):
         if location and os.path.isdir(location):
             command_line += ' ' + os.path.join(location, name)
         else:
-            command_line += ' ' + os.path.join(os.getenv('WORKON_HOME'), name)
+            location = ' ' + os.path.join(os.getenv('WORKON_HOME'), name)
+            command_line += location
     except TypeError:
         raise Exception("Location or WORKON_HOME env variable does not exists")
 
@@ -52,4 +53,11 @@ def init_venv(name, location=None, py_3=True, path_to_rqes=None, options=None):
         command_line += ' --' + option
 
     call(command_line, shell=True)
-    # Activate virtualenv and run pip install -r path_to_rqes here
+    if path_to_rqes:
+        try:
+            venv = os.path.join(location, name, 'bin/activate_this.py')
+            with open(venv) as activate_file:
+                exec(activate_file.read())
+                call(['pip', 'install', '-r', path_to_rqes])
+        except FileNotFoundError:
+            print("Requirements not found.")
