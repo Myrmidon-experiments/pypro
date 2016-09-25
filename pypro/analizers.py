@@ -1,8 +1,8 @@
 import os
 from pypro.exceptions import PathNotExists
 from pypro.initializers import possibles_vcs
+from pypro.utils import my_cd
 from subprocess import call, STDOUT
-from contextlib import contextmanager
 from shutil import copy, which
 
 
@@ -50,15 +50,6 @@ class StructureAnalizer:
         return self.structure.replace(basename, dirname).rstrip()
 
 
-@contextmanager
-def my_cd(path):
-    prev_dir = os.getcwd()
-    os.chdir(path)
-    try:
-        yield
-    finally:
-        os.chdir(prev_dir)
-
 vcs = tuple(filter(lambda x: len(x) < 4, possibles_vcs))
 command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
 
@@ -66,6 +57,9 @@ command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
 def analize_vcs(path, path_for_copy_files):
     """Docstring for analize_vcs.
     """
+    if not (os.path.isdir(path) and os.path.isdir(path_for_copy_files)):
+        raise PathNotExists
+
     def handle_ignore_file(vcs, dest, svn_flag=False):
         ignore_file = '.' + vcs + 'ignore'
         if svn_flag:

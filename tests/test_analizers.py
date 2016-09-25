@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import patch
-from pypro.analizers import StructureAnalizer
+from pypro.analizers import StructureAnalizer, analize_vcs
 from pypro.exceptions import PathNotExists
 
 
@@ -46,5 +46,38 @@ class TestStructureAnalizer:
         assert my_instance.restructure(replace=True) == expected
 
 
-def test_when_analize_vcs():
-    pass
+class TestVCSAnalizer:
+
+    def test_when_analize_with_nonexistent_path(self):
+        with pytest.raises(PathNotExists):
+            analize_vcs('/some/path', '/other/path')
+
+    @patch('os.path.isdir')
+    def test_when_analize_without_ignorefiles(self, mock_isdir):
+        mock_isdir.return_value = True
+        with patch('os.chdir'), \
+                patch('pypro.analizers.which') as mock_which, \
+                patch('pypro.analizers.call') as mock_call:
+            mock_which.return_value = '/usr/bin/some_vcs'
+            mock_call.return_value = 0
+            vcs = analize_vcs('/some/path', '/other/path')
+            assert vcs in ('git', 'bzr', 'svn', 'hg')
+        assert mock_isdir.called
+        assert mock_which.called
+        assert mock_call.called
+
+    @patch('os.path.isdir')
+    def test_when_analize_with_ignorefiles(self, mock_isdir):
+        mock_isdir.return_value = True
+        with patch('os.chdir'), \
+                patch('pypro.analizers.which') as mock_which, \
+                patch('pypro.analizers.copy') as mock_copy, \
+                patch('pypro.analizers.os.path.isfile') as mock_isfile, \
+                patch('pypro.analizers.call') as mock_call:
+            mock_which.return_value = '/usr/bin/some_vcs'
+            mock_call.return_value = 0
+            mock_isfile.return_value = True
+            mock_copy.return_value = '/other/path'
+            analize_vcs('/some/path', '/other/path')
+        assert mock_isfile.called
+        assert mock_copy.called
