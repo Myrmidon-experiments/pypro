@@ -8,8 +8,8 @@ class ConfigFile:
     def __init__(self, file_handler_cls, file_):
         self.methods = ('read', 'write', 'save')
         self.file_ = file_
-        with open(file_):
-            self.file_handler = file_handler_cls(file_.read())
+        with open(file_) as f:
+            self.file_handler = file_handler_cls(f.read())
 
     @property
     def file_handler(self):
