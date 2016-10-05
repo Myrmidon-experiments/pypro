@@ -1,7 +1,7 @@
 import os
 from pypro.exceptions import PathNotExists
 from pypro.initializers import possibles_vcs
-from pypro.utils import my_cd
+from pypro.utils import my_chdir
 from subprocess import call, STDOUT
 from shutil import copy, which
 
@@ -18,6 +18,7 @@ class StructureAnalizer:
         self.structure = ""
 
     def analize_dir_structure(self, path):
+        self.structure = ""
         if not os.path.isdir(path):
             raise PathNotExists("Dir does not exists")
         if path.endswith('/'):
@@ -49,14 +50,29 @@ class StructureAnalizer:
             return dirname + self.structure.replace(basename, '+')[1:].rstrip()
         return self.structure.replace(basename, dirname).rstrip()
 
+    def restructure_as_tree(self):
+        print()
+        template = ''
+        for name in self.restructure().split('\n'):
+            level = name.count('/')
+            if name.endswith('/'):
+                name = name[:-1]
+                level -= 1
+            indent = " " * 4 * level
+            basename = name[(name.rfind('/') + 1):]
+            template += '{}{}\n'.format(indent, basename)
+        return template
 
-vcs = tuple(filter(lambda x: len(x) < 4, possibles_vcs))
-command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
+a = StructureAnalizer()
+a.analize_dir_structure('/home/cactus/Escritorio/root_dir')
+a.restructure_as_tree()
 
 
 def analize_vcs(path, path_for_copy_files):
     """Docstring for analize_vcs.
     """
+    vcs = tuple(filter(lambda x: len(x) < 4, possibles_vcs))
+    command_vcs = dict(zip(vcs, ('status', 'status', 'root', 'info')))
     if not (os.path.isdir(path) and os.path.isdir(path_for_copy_files)):
         raise PathNotExists
 
@@ -67,7 +83,7 @@ def analize_vcs(path, path_for_copy_files):
         elif os.path.isfile(ignore_file):
             copy(ignore_file, dest)
 
-    with my_cd(path):
+    with my_chdir(path):
         for k, v in command_vcs.items():
             svn_flag = True if k == 'svn' else False
             if which(k) and call([k, v], stderr=STDOUT,

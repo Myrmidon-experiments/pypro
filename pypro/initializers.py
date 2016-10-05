@@ -1,39 +1,52 @@
 import os
 from subprocess import call
-from shutil import which
+from shutil import which, copy
+from pypro.utils import my_chdir
 
 
 possibles_vcs = ('git', 'bzr', 'bazaar', 'hg',
                  'mercurial', 'svn', 'subversion')
 
 
-def init_structure(name, structure=None,
-                   location='/home/cactus/Escritorio/test_pypro'):
+def create_structure(name, structure, location):
+    """Create the directory structure with the given name as root directory
+    under given location.
+    """
     real_structure = structure.replace('project_name', name)
     dirs = (d for d in real_structure.split('\n') if d.endswith('/'))
-    files = (f for f in real_structure.split('\n')
-             if not f.endswith('/'))
-
+    files = (f for f in real_structure.split('\n') if not f.endswith('/'))
     try:
         for directory in dirs:
             os.makedirs(os.path.join(location, directory))
 
         for file_ in files:
             open(os.path.join(location, file_), 'a').close()
+        return os.path.join(location, name)
 
     except FileExistsError:
         print('Directory or file already exists')
 
 
-def init_vcs(vcs, ignore_file=None):
+def init_vcs(vcs, location, ignore_file_path=''):
+    """Initialize the given version control system on the given location."""
     if vcs in possibles_vcs:
-        pass
+        if vcs in ('svn', 'subversion'):
+            call(['svnadmin', 'create', location])
+            if ignore_file_path:
+                pass  # Do svn stuff here
+        else:
+            with my_chdir(location):
+                call([vcs, 'init'])
+            if ignore_file_path:
+                copy(ignore_file_path, location)
     else:
-        print("Vcs not supported")
+        print("Vcs not supported.")
 
 
-def init_venv(name, location=None, py_3=True, path_to_rqes='', options=None):
-    """Docstring for init_venv here...
+def init_venv(name, location=None, py_3=True, path_to_rqes='',
+              options=None, **kwargs):
+    """Initialize a virtualenv with the given name on the location if given,
+    if not, location is $WORKON_HOME env variable.
     """
     command_line = 'virtualenv --python={pyversion}'
     if py_3:

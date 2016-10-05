@@ -1,4 +1,3 @@
-import json
 from configparser import ConfigParser
 from pypro.exceptions import HandlerNotImplement
 

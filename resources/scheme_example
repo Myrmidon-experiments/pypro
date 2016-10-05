@@ -1,6 +1,5 @@
 [General]
-project_structure = 
-	project_name/
+project_structure = project_name/
 	+/docs/
 	+/tests/
 	+/tests/test_main.py
@@ -13,11 +12,11 @@ project_structure =
 root_projects_dir = pepe/mujica
 
 [Analize]
-custom_prefixes = separado por comas
+custom_prefixes = 
 
 [Virtualenv]
-virtualenv_location = path/to/virtualenvs
-virtualenv_options = string (separado por comas)
+location = path/to/virtualenvs
+options = string (separado por comas)
 
 [VCS]
 vcs = git

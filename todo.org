@@ -1,7 +1,7 @@
 #PYPRO -*- mode: org -*-
 
 * DONE [#A] Finish parser
-* TODO [#C] Make setup.py and MANIFEST if is necessary
+* TODO [#C] Make setup.py and MANIFEST if required
 * TODO [#C] Finish README 
 * TODO [#C] Add class and function docstrings
 * TODO [#A] Make Tests   
@@ -10,8 +10,13 @@ Possible new features
 ** Analizers
    - .editorconfig
    - license
+   - vagrant, dockerfile
 ** Config
    - YAML
 ** Initializers
    - Dockerfile
    - Vagrant
+** Cli
+   - config subparser
+     to modify settings from cmd without open the config file.
+     may be interactive
