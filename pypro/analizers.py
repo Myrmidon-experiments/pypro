@@ -63,10 +63,6 @@ class StructureAnalizer:
             template += '{}{}\n'.format(indent, basename)
         return template
 
-a = StructureAnalizer()
-a.analize_dir_structure('/home/cactus/Escritorio/root_dir')
-a.restructure_as_tree()
-
 
 def analize_vcs(path, path_for_copy_files):
     """Docstring for analize_vcs.
