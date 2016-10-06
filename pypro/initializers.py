@@ -1,7 +1,8 @@
 import os
-from subprocess import call
+from subprocess import call, STDOUT
 from shutil import which, copy
 from pypro.utils import my_chdir
+from pypro.exceptions import PathNotExists
 
 
 possibles_vcs = ('git', 'bzr', 'bazaar', 'hg',
@@ -12,6 +13,8 @@ def create_structure(name, structure, location):
     """Create the directory structure with the given name as root directory
     under given location.
     """
+    if not os.path.isdir(structure):
+        raise PathNotExists
     real_structure = structure.replace('project_name', name)
     dirs = (d for d in real_structure.split('\n') if d.endswith('/'))
     files = (f for f in real_structure.split('\n') if not f.endswith('/'))
@@ -27,7 +30,7 @@ def create_structure(name, structure, location):
         print('Directory or file already exists')
 
 
-def init_vcs(vcs, location, ignore_file_path=''):
+def init_vcs(vcs, location, ignore_file_path=""):
     """Initialize the given version control system on the given location."""
     if vcs in possibles_vcs:
         if vcs in ('svn', 'subversion'):
@@ -36,7 +39,8 @@ def init_vcs(vcs, location, ignore_file_path=''):
                 pass  # Do svn stuff here
         else:
             with my_chdir(location):
-                call([vcs, 'init'])
+                call([vcs, 'init'], stderr=STDOUT,
+                     stdout=open(os.devnull, 'w'))
             if ignore_file_path:
                 copy(ignore_file_path, location)
     else:

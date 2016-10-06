@@ -1,8 +1,10 @@
 import os
+import sys
 import pypro.config as cfg
 from pypro.cli import get_args
 from pypro.analizers import StructureAnalizer
 from pypro.initializers import create_structure
+from pypro.exceptions import PathNotExists
 
 
 def _get_config_file(scheme):
@@ -16,6 +18,10 @@ def _get_config_file(scheme):
         os.path.join(os.getenv('HOME', dir_config))
 
 
+def _error_exit():
+    print()
+
+
 def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
     cfg, dir_cfg = _get_config_file(scheme)
     structure = cfg.read_config_item('General', 'project_structure')
@@ -23,21 +29,37 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
         location = on_dir
     else:
         location = cfg.read_config_item('General', 'root_projects_dir')
-
-    create_structure(name, structure, location)
+    try:
+        create_structure(name, structure, location)
+    except PathNotExists:
+        # How to define the _error_exit function here
+        print("algo con respecto a que la ruta no existe")
+        sys.exit()
     if vcs is not None:
         from pypro.initializers import init_vcs
-        if vcs:
-            # For the moment
-            init_vcs(vcs[0], location, ignore_file_path=vcs[1])
-        else:
-            vcs_name = cfg.read_config_item('VCS', 'vcs')
+        try:
+            vcs_name = vcs[0]
+            vcs_founded = True
+        except TypeError:
+            try:
+                vcs_name = cfg.read_config_item('VCS', 'vcs')
+                vcs_founded = True
+            except KeyError:
+                vcs_founded = False
+        if vcs_founded:
             ignore_file_name = '.' + vcs_name + 'ignore'
-            ignore_file_path = os.path.join(dir_cfg, ignore_file_name)
-            if os.path.isfile(ignore_file_path):
-                init_vcs(vcs_name, location, ignore_file_path=ignore_file_path)
-            else:
-                init_vcs(vcs_name, location)
+            try:
+                ignore_file_path = os.path.join(vcs[1], ignore_file_name)
+            except IndexError:
+                if os.path.isfile(os.path.join(dir_cfg, ignore_file_name)):
+                    ignore_file_path = os.path.join(dir_cfg, ignore_file_name)
+                else:
+                    ignore_file_path = ""
+            init_vcs(vcs_name, location,
+                     ignore_file_path=ignore_file_path)
+        else:
+            print("You must define your vcs")
+    # Falta mejorar venv
     if venv is not None:
         from pypro.initializers import init_venv
         if venv:

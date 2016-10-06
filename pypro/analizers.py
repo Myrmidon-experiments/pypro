@@ -11,11 +11,11 @@ class StructureAnalizer:
     """
 
     def __init__(self, custom_prefixes=None):
+        self.structure = ""
         if custom_prefixes:
             self.exclude_prefixes = custom_prefixes.split(',')
         else:
             self.exclude_prefixes = []
-        self.structure = ""
 
     def analize_dir_structure(self, path):
         self.structure = ""
@@ -51,7 +51,7 @@ class StructureAnalizer:
         return self.structure.replace(basename, dirname).rstrip()
 
     def restructure_as_tree(self):
-        print()
+        print()  # just for emacs ipython
         template = ''
         for name in self.restructure().split('\n'):
             level = name.count('/')
