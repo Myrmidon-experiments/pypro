@@ -20,8 +20,9 @@ def get_args():
     sp_analize.add_argument('path', nargs='?',
                             help="full or relative path. \
                             If not given cwd is default")
-    sp_analize.add_argument('--save', nargs='?', const=1, type=int,
-                            metavar="SCHEME", help="save on scheme file")
+    sp_analize.add_argument('--save', nargs='?', const=0, type=int,
+                            metavar="SCHEME",
+                            help="save on given scheme number")
     sp_analize.add_argument('--no-vcs', action="store_false", dest="novcs",
                             help="analize ignoring the version control system")
 

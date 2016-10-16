@@ -7,7 +7,7 @@ from pypro.initializers import create_structure
 from pypro.exceptions import PathNotExists
 
 
-def _get_config_file(scheme):
+def _get_scheme_config(scheme):
     # Because argparse return None if the optional argument it's not used
     if scheme is None:
         scheme = 0
@@ -18,12 +18,8 @@ def _get_config_file(scheme):
         os.path.join(os.getenv('HOME', dir_config))
 
 
-def _error_exit():
-    print()
-
-
 def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
-    cfg, dir_cfg = _get_config_file(scheme)
+    cfg, dir_cfg = _get_scheme_config(scheme)
     structure = cfg.read_config_item('General', 'project_structure')
     if on_dir and os.path.isdir(on_dir):
         location = on_dir
@@ -33,45 +29,48 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
         create_structure(name, structure, location)
     except PathNotExists:
         # How to define the _error_exit function here
-        print("algo con respecto a que la ruta no existe")
+        print("the given path didn't exists.")
         sys.exit()
     if vcs is not None:
         from pypro.initializers import init_vcs
-        try:
-            vcs_name = vcs[0]
-            vcs_founded = True
-        except TypeError:
+        if vcs:
+            if len(vcs) != 2:
+                print("You must pass 2 arguments to --vcs")
+            else:
+                vcs_name = vcs[0]
+                ignore_file_name = '.' + vcs_name + 'ignore'
+                ignore_file_path = os.path.join(vcs[1], ignore_file_name)
+                init_vcs(vcs_name, location, ignore_file_path=ignore_file_name)
+        else:
             try:
                 vcs_name = cfg.read_config_item('VCS', 'vcs')
                 vcs_founded = True
             except KeyError:
+                print("You must define the vcs in the scheme file")
                 vcs_founded = False
-        if vcs_founded:
-            ignore_file_name = '.' + vcs_name + 'ignore'
-            try:
-                ignore_file_path = os.path.join(vcs[1], ignore_file_name)
-            except IndexError:
+            if vcs_founded:
+                ignore_file_name = '.' + vcs_name + 'ignore'
                 if os.path.isfile(os.path.join(dir_cfg, ignore_file_name)):
-                    ignore_file_path = os.path.join(dir_cfg, ignore_file_name)
+                    ignore_file_path = os.path.join(
+                        dir_cfg, ignore_file_name)
                 else:
                     ignore_file_path = ""
-            init_vcs(vcs_name, location,
-                     ignore_file_path=ignore_file_path)
-        else:
-            print("You must define your vcs")
-    # Falta mejorar venv
+                init_vcs(vcs_name, location,
+                         ignore_file_path=ignore_file_path)
+
     if venv is not None:
         from pypro.initializers import init_venv
         if venv:
-            # For the moment
-            a = ('py_3', 'path_to_rqes', 'location', 'options')
-            venv_args = dict()
-            for i in range(0, len(venv)):
-                venv_args[a[i]] = venv[i]
-            init_venv(name, **venv_args)
+            if len(venv) != 4:
+                print("You must pass 4 arguments to --venv")
+            else:
+                # For the moment.
+                a = ('py_3', 'path_to_rqes', 'location', 'options')
+                venv_args = dict()
+                for i in range(0, len(venv)):
+                    venv_args[a[i]] = venv[i]
+                init_venv(name, **venv_args)
         else:
-            # Python 3 default, location from config file o WORKON_HOME
-            # options from config file, requirements.txt from config dir
             venv_args = dict()
             venv_args['location'] = cfg.read_config_item(
                 'Virtualenv', 'location')
@@ -88,9 +87,48 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
 
 def _analize(path, scheme, analize_vcs=True, **kwargs):
     def _save_analysis():
-        pass
+        save_on_default = False
+        if scheme is None:
+            save_flag = input(':: Do you want to save this' +
+                              ' analysis in scheme 0? [Y/n] ')
+            if save_flag in ('Y', 'y', 'YES', 'yes'):
+                save_on_default = True
 
-    cfg, dir_cfg = _get_config_file(scheme)
+        if scheme is not None or save_on_default:
+            scheme_number = scheme if scheme else 0
+            cfg.write_config_item('General', 'project_structure',
+                                  structure_analizer.restructure())
+            if vcs:
+                cfg.write_config_item('VCS', 'vcs', vcs)
+            cfg.save_changes()
+            print("\x1b[1m:: Analysis saved in scheme {}\x1b[0m".format(
+                scheme_number))
+
+    def _print_analysis():
+        header = ' Analysis on {} '.format(
+            os.path.abspath(path)).center(50, '#')
+        border = '-' * len(header)
+        template = '{}\n{}\n{}\n\n'.format(border, header, border) + \
+            '\x1b[1mStructure\x1b[0m\n---------\n\n' + \
+            '{tree}\n\n' + \
+            ':: prefixes exclude on analysis -> {prefixes}\n\n'
+        template_vcs = '\x1b[1mVersion Control System\x1b[0m\n---------\n' + \
+            ':: {vcs_name}\n:: {ignore_file}\n'
+        format_args = dict()
+        format_args['prefixes'] = structure_analizer.exclude_prefixes
+        format_args['tree'] = structure_analizer.restructure_as_tree()
+        format_args['vcs_name'] = vcs.upper() if vcs else "Not Found"
+        if path_to_ignore_file:
+            format_args['ignore_file'] = '{} saved in {}'.format(
+                ignore_file_name, path_to_ignore_file)
+        else:
+            format_args['ignore_file'] = 'ignore file not founded'
+        template += template_vcs if analize_vcs else ''
+        template += border + '\n'
+        print(template.format(**format_args))
+
+    # Starts here
+    cfg, dir_cfg = _get_scheme_config(scheme)
     custom_prefixes = cfg.read_config_item('Analize', 'custom_prefixes')
     if custom_prefixes or not custom_prefixes.isspace():
         structure_analizer = StructureAnalizer(custom_prefixes=custom_prefixes)
@@ -99,8 +137,13 @@ def _analize(path, scheme, analize_vcs=True, **kwargs):
     if path is None:
         path = os.getcwd()
     structure_analizer.analize_dir_structure(path)
-
-    # Save in given scheme here with restructure() function
+    if analize_vcs:
+        from pypro.analizers import analize_vcs
+        vcs, path_to_ignore_file, ignore_file_name = analize_vcs(path, dir_cfg)
+    else:
+        vcs, path_to_ignore_file, ignore_file_name = None, None, None
+    _print_analysis()
+    _save_analysis()
 
 
 def main():

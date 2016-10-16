@@ -76,14 +76,18 @@ def analize_vcs(path, path_for_copy_files):
         ignore_file = '.' + vcs + 'ignore'
         if svn_flag:
             pass  # svn ignore files stuff here
-        elif os.path.isfile(ignore_file):
-            copy(ignore_file, dest)
+        else:
+            try:
+                return copy(ignore_file, dest), ignore_file
+            except FileNotFoundError:
+                return None, None
 
     with my_chdir(path):
         for k, v in command_vcs.items():
             svn_flag = True if k == 'svn' else False
             if which(k) and call([k, v], stderr=STDOUT,
                                  stdout=open(os.devnull, 'w')) == 0:
-                handle_ignore_file(k, path_for_copy_files, svn_flag)
-                return k
-        return
+                file_dest, ignore_file_name = handle_ignore_file(
+                    k, path_for_copy_files, svn_flag)
+                return k, file_dest, ignore_file_name
+        return None, None, None
