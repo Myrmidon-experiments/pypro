@@ -51,7 +51,6 @@ class StructureAnalizer:
         return self.structure.replace(basename, dirname).rstrip()
 
     def restructure_as_tree(self):
-        print()  # just for emacs ipython
         template = ''
         for name in self.restructure().split('\n'):
             level = name.count('/')
@@ -73,12 +72,12 @@ def analize_vcs(path, path_for_copy_files):
         raise PathNotExists
 
     def handle_ignore_file(vcs, dest, svn_flag=False):
-        ignore_file = '.' + vcs + 'ignore'
+        ignore_file_name = '.' + vcs + 'ignore'
         if svn_flag:
             pass  # svn ignore files stuff here
         else:
             try:
-                return copy(ignore_file, dest), ignore_file
+                return copy(ignore_file_name, dest), ignore_file_name
             except FileNotFoundError:
                 return None, None
 
