@@ -1,10 +1,11 @@
 #PYPRO -*- mode: org -*-
 
+Version 0.0.1
 * DONE [#A] Finish parser
-* TODO [#C] Make setup.py and MANIFEST if required
-* TODO [#C] Finish README 
-* TODO [#C] Add class and function docstrings
-* TODO [#A] Make Tests   
+* IN-PROGRESS Make setup.py and MANIFEST if required
+* IN-PROGRESS [#C] Finish README 
+* IN-PROGRESS [#C] Add class and function docstrings
+* IN-PROGRESS [#A] Make Tests   
 
 Possible new features
 ** Analizers

@@ -12,14 +12,16 @@ class CustomDevelop(develop):
         develop.run(self)
 
 description = "Description here... "
+EXCLUDE_FROM_PACKAGES = ('tests', 'todo.org')
 
 
 setup(
     name="pypro",
     version="0.0.1",
-    packages=find_packages(),
+    packages=find_packages(exclude=EXCLUDE_FROM_PACKAGES),
     description=description,
     license='GPLv3',
+    include_package_data=True,
     cmdclass={
         'develop': CustomDevelop,
     },
@@ -33,4 +35,14 @@ setup(
     # Author info
     author='cactus',
     author_email='correa.francisco.21@gmail.com',
+    classifiers=[
+        'Development Status :: 2 - Pre-Alpha',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
+        'Topic :: Utilities'
+    ]
 )

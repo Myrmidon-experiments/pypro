@@ -9,13 +9,23 @@ from pypro.exceptions import PathNotExists
 
 def _get_scheme_config(scheme):
     # Because argparse return None if the optional argument it's not used
+    home_path = os.getenv('HOME')
     if scheme is None:
         scheme = 0
     config_file_name = '.pypro/scheme' + str(scheme)
     dir_config = '.pypro/dir_scheme' + str(scheme)
-    config_file_location = os.path.join(os.getenv('HOME'), config_file_name)
-    return cfg.ConfigFile(cfg.ConfigParserHandler, config_file_location), \
-        os.path.join(os.getenv('HOME', dir_config))
+    config_file_path = os.path.join(home_path, config_file_name)
+    dir_config_path = os.path.join(home_path, dir_config)
+    if not os.path.isfile(config_file_path):
+        os.makedirs(dir_config_path)
+        with open(config_file_path, 'w+') as f:
+            # This is for the moment. It change in first release, because
+            # the file path that contains the config will be different.
+            path = '/home/cactus/Devel/pypro/resources/scheme_example'
+            with open(path) as ff:
+                f.write(ff.read())
+    return cfg.ConfigFile(cfg.ConfigParserHandler, config_file_path), \
+        dir_config_path
 
 
 def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
@@ -40,7 +50,8 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
                 vcs_name = vcs[0]
                 ignore_file_name = '.' + vcs_name + 'ignore'
                 ignore_file_path = os.path.join(vcs[1], ignore_file_name)
-                init_vcs(vcs_name, location, ignore_file_path=ignore_file_name)
+                init_vcs(vcs_name, location,
+                         ignore_file_path=ignore_file_name)
         else:
             try:
                 vcs_name = cfg.read_config_item('VCS', 'vcs')
