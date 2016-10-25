@@ -2,7 +2,7 @@ import pytest
 import os
 import sys
 from pypro.exceptions import PathNotExists, WrongProjectStructure
-from pypro.initializers import create_structure
+from pypro.initializers import create_structure, init_vcs, init_venv
 from unittest.mock import patch, mock_open, call
 
 
@@ -70,3 +70,34 @@ class TestCreateStructure:
             assert output == "Directory or file already exists"
         finally:
             sys.stdout = saved_stdout
+
+
+class TestInitVCS:
+
+    def test_when_vcs_not_supported(self):
+        from io import StringIO
+        saved_stdout = sys.stdout
+        try:
+            out = StringIO()
+            sys.stdout = out
+            init_vcs('gitt', '/some/false/loc')
+            output = out.getvalue().strip()
+            assert output == "Vcs not supported."
+        finally:
+            sys.stdout = saved_stdout
+
+    def test_when_location_not_exists(self):
+        with pytest.raises(FileNotFoundError):
+            init_vcs('git', '/some/false/loc')
+
+    def test_when_vcs_init_without_ignore_file(self):
+        with patch('os.chdir') as mock_chdir, \
+                patch('pypro.initializers.call') as mock_call:
+            mock_call.return_value = 0
+            init_vcs('git', '/some/false/loc')
+            args, kwargs = mock_call.call_args
+            assert args[0] == ['git', 'init']
+            assert mock_chdir.call_args_list[0] == call('/some/false/loc')
+
+    def test_when_vcs_init_with_ignore_file(self):
+        pass
