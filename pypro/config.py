@@ -3,6 +3,9 @@ from pypro.exceptions import HandlerNotImplement
 
 
 class ConfigFile:
+    """Class ConfigFile docstring.
+    Later.
+    """
 
     def __init__(self, file_handler_cls, file_):
         self.methods = ('read', 'write', 'save')
@@ -22,12 +25,21 @@ class ConfigFile:
         self._file_handler = real_file_handler
 
     def read_config_item(self, section, item_name):
+        """Docstring for method.
+        Later.
+        """
         return self.file_handler.read(section, item_name)
 
     def write_config_item(self, section, item_name, input_):
+        """Docstring for method.
+        Later.
+        """
         self.file_handler.write(section, item_name, input_)
 
     def save_changes(self):
+        """Docstring for method.
+        Later.
+        """
         self.file_handler.save(self.file_)
 
 

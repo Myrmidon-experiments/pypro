@@ -55,7 +55,7 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
         else:
             try:
                 vcs_name = cfg.read_config_item('VCS', 'vcs')
-                vcs_founded = True
+                vcs_founded = True if vcs_name else False
             except KeyError:
                 print("You must define the vcs in the scheme file")
                 vcs_founded = False
@@ -85,6 +85,8 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
             venv_args = dict()
             venv_args['location'] = cfg.read_config_item(
                 'Virtualenv', 'location')
+            if cfg.read_config_item('Virtualenv', 'python_version') == '2':
+                venv_args['py_3'] = False
             possible_rqes = os.path.join(dir_cfg, 'requirements.txt')
             if os.path.isfile(possible_rqes):
                 venv_args['path_to_rqes'] = possible_rqes

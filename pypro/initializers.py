@@ -1,19 +1,39 @@
 import os
+import re
 from subprocess import call, STDOUT
 from shutil import which, copy
 from pypro.utils import my_chdir
-from pypro.exceptions import PathNotExists
+from pypro.exceptions import PathNotExists, WrongProjectStructure
 
 
 possibles_vcs = ('git', 'bzr', 'bazaar', 'hg',
                  'mercurial', 'svn', 'subversion')
+
+FIRST_LINE = 'project_name/$'
+FILE_NAME = '(\w|\.)(\w|-)(\w|-|\.)*'
+PATH_NAME = '(\w|\.)(\w|-)(\w|-|\.)*/'
+FIRST_PART_NEXT_LINE = 'project_name/|\+/'
+SECOND_PART_NEXT_LINE = '(({})*({})?)'.format(PATH_NAME, FILE_NAME)
+NEXT_LINES = '(({})({}))$'.format(FIRST_PART_NEXT_LINE, SECOND_PART_NEXT_LINE)
+first_line_pattern = re.compile(FIRST_LINE)
+next_lines_pattern = re.compile(NEXT_LINES)
+
+
+def _check_structure(structure):
+    l = structure.rstrip().split('\n')
+    first_line = True if first_line_pattern.match(l[0]) else False
+    dirs_and_files = (True if next_lines_pattern.match(
+        path) else False for path in l[1:])
+    return all(dirs_and_files) and first_line
 
 
 def create_structure(name, structure, location):
     """Create the directory structure with the given name as root directory
     under given location.
     """
-    if not os.path.isdir(structure):
+    if not _check_structure(structure):
+        raise WrongProjectStructure
+    if not os.path.isdir(location):
         raise PathNotExists
     real_structure = structure.replace('project_name', name)
     dirs = (d for d in real_structure.split('\n') if d.endswith('/'))

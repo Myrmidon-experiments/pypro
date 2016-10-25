@@ -9,15 +9,16 @@ project_structure = project_name/
 	+/MANIFEST.in
 	+/README.md
 	+/requirements.txt
-root_projects_dir = pepe/mujica
+root_projects_dir = path/to/root/dir/
 
 [Analize]
 custom_prefixes = 
 
 [Virtualenv]
-location = path/to/virtualenvs
+location = path/to/virtualenvs/
+python_version = 
 options = string (separado por comas)
 
 [VCS]
-vcs = git
+vcs = 
 

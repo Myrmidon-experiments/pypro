@@ -1,5 +1,4 @@
 import os
-from mimetypes import guess_type
 from contextlib import contextmanager
 
 
@@ -11,7 +10,3 @@ def my_chdir(path):
         yield
     finally:
         os.chdir(prev_dir)
-
-
-def get_mimetype(file_):
-    return guess_type(file_)[0]
