@@ -1,7 +1,7 @@
 import pytest
 import os
 import sys
-from pypro.exceptions import PathNotExists, WrongProjectStructure
+from pypro.exceptions import PathNotExists, SchemeConfigWrong
 from pypro.initializers import create_structure, init_vcs, init_venv
 from unittest.mock import patch, mock_open, call
 
@@ -26,7 +26,7 @@ def any_name_struc():
 class TestCreateStructure:
 
     def test_when_structure_is_wrong(self):
-        with pytest.raises(WrongProjectStructure):
+        with pytest.raises(SchemeConfigWrong):
             create_structure('any_name', wrong_structure, '/some/false/loc')
 
     def test_when_location_not_exists(self):
@@ -100,4 +100,59 @@ class TestInitVCS:
             assert mock_chdir.call_args_list[0] == call('/some/false/loc')
 
     def test_when_vcs_init_with_ignore_file(self):
+        pass
+
+
+class TestInitVenv:
+
+    @patch('os.getenv')
+    def test_when_env_variable_workon_home_not_exists(self, mock_getenv):
+        mock_getenv.return_value = None
+        with pytest.raises(Exception):
+            init_venv('any_name')
+
+    @patch('os.getenv')
+    def test_when_workon_home_exists(self, mock_getenv):
+        expected_cmd = 'virtualenv --python=python3 {}/{}'.format(
+            '/path/to/virtualenvs', 'any_name')
+        mock_getenv.return_value = '/path/to/virtualenvs'
+        with patch('pypro.initializers.call') as mock_call, \
+                patch('pypro.initializers.which') as mock_which:
+            mock_which.return_value = 'python3'
+            init_venv('any_name')
+            mock_call.assert_called_with(expected_cmd, shell=True)
+
+    def test_when_options_is_wrong_defined(self):
+        wrong_options = "option1,option2"
+        with pytest.raises(SchemeConfigWrong):
+            init_venv('any_name', '/path/to/virtualenvs',
+                      options=wrong_options)
+
+    @patch('os.getenv')
+    def test_when_options_is_well_defined(self, mock_getenv):
+        options = 'no-pip,download'
+        mock_getenv.return_value = '/path/to/virtualenvs'
+        expected_cmd = 'virtualenv --python=python3 {}/{} {}'.format(
+            '/path/to/virtualenvs', 'any_name', '--no-pip --download')
+        with patch('pypro.initializers.call') as mock_call, \
+                patch('pypro.initializers.which') as mock_which:
+            mock_which.return_value = 'python3'
+            init_venv('any_name', options=options)
+            mock_call.assert_called_with(expected_cmd, shell=True)
+
+    @patch('os.getenv')
+    def test_when_install_dependencies_from_rqes(self, mock_getenv):
+        m = mock_open(read_data='tada')
+        mock_getenv.return_value = '/path/to/virtualenvs'
+        expected_exec = '/path/to/virtualenvs/any_name/bin/activate_this.py'
+        with patch('pypro.initializers.call') as mock_call, \
+                patch('builtins.exec') as mock_exec, \
+                patch('builtins.open', m, create=True) as mo:
+            init_venv('any_name', path_to_rqes='rqes.txt')
+            mo.assert_called_once_with(expected_exec)
+            mock_exec.assert_called_with('tada')
+            mock_call.assert_called_with(['pip', 'install', '-r', 'rqes.txt'])
+
+    def test_when_rqes_not_founded(self):
+        """print statement"""
         pass

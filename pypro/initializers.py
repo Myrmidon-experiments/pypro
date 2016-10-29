@@ -3,11 +3,8 @@ import re
 from subprocess import call, STDOUT
 from shutil import which, copy
 from pypro.utils import my_chdir
-from pypro.exceptions import PathNotExists, WrongProjectStructure
+from pypro.exceptions import PathNotExists, SchemeConfigWrong
 
-
-possibles_vcs = ('git', 'bzr', 'bazaar', 'hg',
-                 'mercurial', 'svn', 'subversion')
 
 FIRST_LINE = 'project_name/$'
 FILE_NAME = '(\w|\.)(\w|-)(\w|-|\.)*'
@@ -32,7 +29,7 @@ def create_structure(name, structure, location):
     under given location.
     """
     if not _check_structure(structure):
-        raise WrongProjectStructure
+        raise SchemeConfigWrong("project structure wrong defined")
     if not os.path.isdir(location):
         raise PathNotExists
     real_structure = structure.replace('project_name', name)
@@ -50,6 +47,10 @@ def create_structure(name, structure, location):
         print('Directory or file already exists')
 
 
+possibles_vcs = ('git', 'bzr', 'bazaar', 'hg',
+                 'mercurial', 'svn', 'subversion')
+
+
 def init_vcs(vcs, location, ignore_file_path=""):
     """Initialize the given version control system on the given location."""
     if vcs in possibles_vcs:
@@ -65,6 +66,22 @@ def init_vcs(vcs, location, ignore_file_path=""):
                 copy(ignore_file_path, location)
     else:
         print("Vcs not supported.")
+
+
+# extra-search-dir=DIR, prompt=PROMPT lack
+available_options = (
+    'clear',
+    'system-site-packages',
+    'always-copy',
+    'unzip-setuptools',
+    'relocatable',
+    'no-setuptools',
+    'no-pip',
+    'no-wheel',
+    'download',
+    'no-download',
+    'never-download'
+)
 
 
 def init_venv(name, location=None, py_3=True, path_to_rqes='',
@@ -86,13 +103,17 @@ def init_venv(name, location=None, py_3=True, path_to_rqes='',
     except TypeError:
         raise Exception("Location or WORKON_HOME env variable does not exists")
 
-    for option in options.split(','):
-        command_line += ' --' + option
+    if options:
+        for option in options.split(','):
+            if option in available_options:
+                command_line += ' --' + option
+            else:
+                raise SchemeConfigWrong("options for virtualenv wrong defined")
 
     call(command_line, shell=True)
     if path_to_rqes:
         try:
-            venv = os.path.join(location, name, 'bin/activate_this.py')
+            venv = os.path.join(location, 'bin/activate_this.py').strip()
             with open(venv) as activate_file:
                 exec(activate_file.read())
                 call(['pip', 'install', '-r', path_to_rqes])
