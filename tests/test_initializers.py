@@ -97,7 +97,6 @@ class TestInitVCS:
             init_vcs('git', '/some/false/loc')
             args, kwargs = mock_call.call_args
             assert args[0] == ['git', 'init']
-            assert mock_chdir.call_args_list[0] == call('/some/false/loc')
 
     def test_when_vcs_init_with_ignore_file(self):
         pass
