@@ -5,7 +5,9 @@ Version 0.0.1
 * IN-PROGRESS Make setup.py and MANIFEST if required
 * IN-PROGRESS [#C] Finish README 
 * IN-PROGRESS [#C] Add class and function docstrings
-* IN-PROGRESS [#A] Make Tests   
+* DONE [#A] Make Tests
+* TODO Test manually -vcs and -venv in pypro init
+
 
 Possible new features
 ** Analizers

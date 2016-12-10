@@ -41,61 +41,55 @@ def _init(name, scheme, on_dir=None, vcs=None, venv=None, **kwargs):
         # How to define the _error_exit function here
         print("the given path didn't exists.")
         sys.exit()
+    # VCS ZONE
     if vcs is not None:
         from pypro.initializers import init_vcs
-        if vcs:
-            if len(vcs) != 2:
-                print("You must pass 2 arguments to --vcs")
-            else:
-                vcs_name = vcs[0]
-                ignore_file_name = '.' + vcs_name + 'ignore'
-                ignore_file_path = os.path.join(vcs[1], ignore_file_name)
-                init_vcs(vcs_name, location,
-                         ignore_file_path=ignore_file_name)
-        else:
+        try:
+            vcs_name = vcs[0]
+            vcs_founded = True
+        except IndexError:
+            vcs_name = cfg.read_config_item('VCS', 'vcs')
+            vcs_founded = True if vcs_name else False
+        if vcs_founded:
             try:
-                vcs_name = cfg.read_config_item('VCS', 'vcs')
-                vcs_founded = True if vcs_name else False
-            except KeyError:
-                print("You must define the vcs in the scheme file")
-                vcs_founded = False
-            if vcs_founded:
+                ignore_file_path = vcs[1]
+            except IndexError:
                 ignore_file_name = '.' + vcs_name + 'ignore'
                 if os.path.isfile(os.path.join(dir_cfg, ignore_file_name)):
                     ignore_file_path = os.path.join(
                         dir_cfg, ignore_file_name)
                 else:
                     ignore_file_path = ""
-                init_vcs(vcs_name, location,
-                         ignore_file_path=ignore_file_path)
-
+            init_vcs(vcs_name, location,
+                     ignore_file_path=ignore_file_path)
+    # VENV ZONE
     if venv is not None:
         from pypro.initializers import init_venv
-        if venv:
-            if len(venv) != 4:
-                print("You must pass 4 arguments to --venv")
-            else:
-                # For the moment.
-                a = ('py_3', 'path_to_rqes', 'location', 'options')
-                venv_args = dict()
-                for i in range(0, len(venv)):
-                    venv_args[a[i]] = venv[i]
-                init_venv(name, **venv_args)
-        else:
-            venv_args = dict()
-            venv_args['location'] = cfg.read_config_item(
-                'Virtualenv', 'location')
-            if cfg.read_config_item('Virtualenv', 'python_version') == '2':
+        venv_args = dict()
+        try:
+            venv_args['py_3'] = venv[0]
+        except IndexError:
+            if cfg.read_config_item('Virtualenv', 'python_version') == 2:
                 venv_args['py_3'] = False
+        try:
+            venv_args['location'] = venv[1]
+        except IndexError:
+            if cfg.read_config_item('Virtualenv', 'location'):
+                venv_args['location'] = cfg.read_config_item(
+                    'Virtualenv', 'location')
+        try:
+            venv_args['path_to_rqes'] = venv[2]
+        except IndexError:
             possible_rqes = os.path.join(dir_cfg, 'requirements.txt')
             if os.path.isfile(possible_rqes):
                 venv_args['path_to_rqes'] = possible_rqes
-            try:
-                venv_args['options'] = cfg.read_config_item(
-                    'Virtualenv', 'options')
-            except KeyError:
-                pass
-            init_venv(name, **venv_args)
+        try:
+            venv_args['options'] = venv[3]
+        except IndexError:
+            possible_options = cfg.read_config_item('Virtualenv', 'options')
+            if possible_options:
+                venv_args['options'] = possible_options
+        init_venv(name, **venv_args)
 
 
 def _analize(path, scheme, analize_vcs=True, **kwargs):
@@ -140,7 +134,7 @@ def _analize(path, scheme, analize_vcs=True, **kwargs):
         template += border + '\n'
         print(template.format(**format_args))
 
-    # Starts here
+    # Start here
     cfg, dir_cfg = _get_scheme_config(scheme)
     custom_prefixes = cfg.read_config_item('Analize', 'custom_prefixes')
     if custom_prefixes or not custom_prefixes.isspace():
